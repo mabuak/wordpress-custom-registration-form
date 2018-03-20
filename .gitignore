@@ -1,0 +1,29 @@
+# phpstorm project files
+.idea
+
+# netbeans project files
+nbproject
+
+# zend studio for eclipse project files
+.buildpath
+.project
+.settings
+
+# windows thumbnail cache
+Thumbs.db
+
+# Mac DS_Store Files
+.DS_Store
+
+/vendor
+/node_modules
+/public/storage
+/public/uploads
+Homestead.yaml
+Homestead.json
+.env
+/config/database.php
+
+#Composer
+composer.json
+composer.lock
