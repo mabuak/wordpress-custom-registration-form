@@ -19,7 +19,7 @@ function my_script() {
 add_action( 'wp_enqueue_scripts', 'my_script' );
 
 // The function for display the form
-function taylor_form( $name, $phone, $email, $company, $website, $sales_revenue, $message ) {
+function taylor_form( $name, $phone, $email, $company, $website, $category, $message ) {
 	echo '
 	<style>
 	.required {
@@ -31,32 +31,44 @@ function taylor_form( $name, $phone, $email, $company, $website, $sales_revenue,
 	';
 	
 	echo '
-    <form class="taylor-form dt-taylor-form" action="' . $_SERVER['REQUEST_URI'] . '" method="post">
+	<form class="taylor-form dt-taylor-form" action="' . $_SERVER['REQUEST_URI'] . '" method="post">
 	<input type="hidden" name="send_message">
-    <div class="form-fields">
-	<label for="name">Full Name <span class="required">*</span></label>
-    <input type="text" class="validate[required]" name="name" value="' . ( isset( $_POST['name'] ) ? $name : null ) . '">
-	
-	<label for="phone">Phone <span class="required">*</span></label>
-    <input type="text" class="validate[required]" name="phone" value="' . ( isset( $_POST['phone'] ) ? $phone : null ) . '">
-	
-	<label for="email">Email <span class="required">*</span></label>
-    <input type="text" class="validate[required,custom[email]]" name="email" value="' . ( isset( $_POST['email'] ) ? $email : null ) . '">
-	
-	<label for="company">Company Name</label>
-    <input type="text" name="company" value="' . ( isset( $_POST['company'] ) ? $company : null ) . '">
-	
-	<label for="website">Website</label>
-    <input type="text" name="website" value="' . ( isset( $_POST['website'] ) ? $website : null ) . '">
-    
-	<label for="sales_revenue">Monthly Sales Revenue</label>
-    <input type="text" name="sales_revenue" value="' . ( isset( $_POST['sales_revenue'] ) ? $sales_revenue : null ) . '">
-    
-	<label for="message">Message <span class="required">*</span></label>
-    <textarea name="message" class="validate[required]">' . ( isset( $_POST['message'] ) ? $message : null ) . '</textarea>
-	
+    <div class="vc_col-sm-6">
+		<div class="form-fields">
+			<label for="name">Full Name <span class="required">*</span></label>
+		    <input type="text" class="validate[required]" name="name" tabindex="1" value="' . ( isset( $_POST['name'] ) ? $name : null ) . '">
+		
+			<label for="email">Email <span class="required">*</span></label>
+		    <input type="text" class="validate[required,custom[email]]" tabindex="3" name="email" value="' . ( isset( $_POST['email'] ) ? $email : null ) . '">
+		
+			<label for="company">Company Name</label>
+			<input type="text" name="company" tabindex="5" value="' . ( isset( $_POST['company'] ) ? $company : null ) . '">
+		</div>
 	</div>
-	<input class="dt-btn dt-btn-m dt-btn-submit" style="margin-top: 1%" type="submit" name="submit" value="Learn More"/>
+	<div class="vc_col-sm-6">
+		<div class="form-fields">
+			<label for="phone">Phone <span class="required">*</span></label>
+			<input type="text" class="validate[required]" tabindex="2" name="phone" value="' . ( isset( $_POST['phone'] ) ? $phone : null ) . '">
+			
+			<label for="website">Website</label>
+			<input type="text" name="website" tabindex="4" value="' . ( isset( $_POST['website'] ) ? $website : null ) . '">
+			
+			
+			<label for="category">Company Category</label>
+			<input type="text" name="category" tabindex="6" value="' . ( isset( $_POST['category'] ) ? $category : null ) . '">
+		</div>
+	</div>
+	<div class="vc_col-sm-12">
+		<div class="form-fields">
+			<label for="message">Tell Us What You Need<span class="required">*</span></label>
+		    <textarea name="message" class="validate[required]" tabindex="7">' . ( isset( $_POST['message'] ) ? $message : null ) . '</textarea>
+		</div>
+	</div>
+	<div class="vc_col-sm-12">
+		<div class="form-fields">
+			<input class="dt-btn dt-btn-m dt-btn-submit" tabindex="8" style="margin-top: 1%;margin-bottom: 5%" type="submit" name="submit" value="Learn More"/>
+		</div>
+	</div>
 	</form>
     ';
 }
@@ -64,19 +76,18 @@ function taylor_form( $name, $phone, $email, $company, $website, $sales_revenue,
 // The function for send email
 function taylor_send_email() {
 	
-	$name          = sanitize_user( $_POST['fields']['name'] );
-	$phone         = esc_attr( $_POST['fields']['phone'] );
-	$email         = sanitize_email( $_POST['fields']['email'] );
-	$company       = esc_url( $_POST['fields']['company'] );
-	$website       = sanitize_text_field( $_POST['fields']['website'] );
-	$sales_revenue = sanitize_text_field( $_POST['fields']['sales_revenue'] );
-	$message       = sanitize_text_field( $_POST['fields']['message'] );
+	$name    = sanitize_user( $_POST['fields']['name'] );
+	$phone   = esc_attr( $_POST['fields']['phone'] );
+	$email   = sanitize_email( $_POST['fields']['email'] );
+	$company = esc_url( $_POST['fields']['company'] );
+	$website = sanitize_text_field( $_POST['fields']['website'] );
+	$message = sanitize_text_field( $_POST['fields']['message'] );
 	
 	$to      = get_option( 'admin_email' );
 	$subject = 'TAILOR MADE APPLICATION DEVELOPMENT FORM';
 	$headers = "From: EOASOLUTIONS <" . $email . "> \r\n";
 	
-	$messageTemp = "Name : $name \nPhone : $phone \nEmail : $email \nCompany : $company \nWebsite : $website \nSales Revenue : $sales_revenue \nMessage : \n$message \n\n\n";
+	$messageTemp = "Name : $name \nPhone : $phone \nEmail : $email \nCompany : $company \nWebsite : $website \nTell Us What You Need : \n$message \n\n\n";
 	
 	//Send Email...
 	wp_mail( $to, $subject, $messageTemp, $headers );
@@ -90,7 +101,7 @@ function taylor_form_shortcode() {
 	
 	ob_start();
 	
-	taylor_form( $_POST['name'], $_POST['phone'], $_POST['email'], $_POST['company'], $_POST['website'], $_POST['sales_revenue'], $_POST['message'] );
+	taylor_form( $_POST['name'], $_POST['phone'], $_POST['email'], $_POST['company'], $_POST['website'], $_POST['message'] );
 	
 	return ob_get_clean();
 }
